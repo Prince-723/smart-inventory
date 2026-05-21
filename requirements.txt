@@ -1,0 +1,6 @@
+pandas
+prophet
+psycopg2-binary
+python-dotenv
+scikit-learn
+faker
