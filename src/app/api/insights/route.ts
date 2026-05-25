@@ -30,13 +30,13 @@ export async function GET() {
 
             // Query the true peak demand date calculated by the machine learning engine
             const maxForecastRes = await db.query(
-                'SELECT ds FROM forecasts WHERE product_id = $1 ORDER BY predicted_demand DESC LIMIT 1',
+                'SELECT date FROM forecasts WHERE product_id = $1 ORDER BY predicted_demand DESC LIMIT 1',
                 [product.id]
             );
 
             let peakDate = "N/A";
             if (maxForecastRes.rows.length > 0) {
-                const dateObj = new Date(maxForecastRes.rows[0].ds);
+                const dateObj = new Date(maxForecastRes.rows[0].date);
                 peakDate = dateObj.toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
