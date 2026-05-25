@@ -12,6 +12,9 @@ if (!process.env.POSTGRES_URL) {
 if (process.env.NODE_ENV === 'production') {
   pool = new Pool({
     connectionString: process.env.POSTGRES_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
   });
 } else {
   // In development mode, use a global variable so we don't hot-reload the connection pool
