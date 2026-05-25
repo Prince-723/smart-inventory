@@ -28,11 +28,27 @@ export async function GET() {
                 riskColor = "amber";
             }
 
+            // Query the true peak demand date calculated by the machine learning engine
+            const maxForecastRes = await db.query(
+                'SELECT ds FROM forecasts WHERE product_id = $1 ORDER BY predicted_demand DESC LIMIT 1',
+                [product.id]
+            );
+
+            let peakDate = "N/A";
+            if (maxForecastRes.rows.length > 0) {
+                const dateObj = new Date(maxForecastRes.rows[0].ds);
+                peakDate = dateObj.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            }
+
             return {
                 productName: product.name,
                 period: "Next 30 days",
                 expectedDemand: `${(avgDemand * 30).toLocaleString()} units`,
-                peakDate: "Feb 14, 2026",
+                peakDate,
                 stockCoverage: `${coverageDays} days`,
                 risk,
                 riskColor
