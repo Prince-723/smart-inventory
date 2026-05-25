@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getSessionUser } from '@/lib/auth';
 
 export async function GET(request: Request) {
     try {
+        const user = await getSessionUser();
+        if (!user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { searchParams } = new URL(request.url);
         const product = searchParams.get('product');
 
@@ -11,14 +17,14 @@ export async function GET(request: Request) {
                 DATE(t.created_at) as date, 
                 SUM(t.quantity) as total_sales
             FROM transactions t
+            JOIN products p ON t.product_id = p.id
         `;
 
-        const params: any[] = [];
-        let whereClause = "WHERE t.type = 'OUTBOUND'";
+        const params: any[] = [user.id];
+        let whereClause = "WHERE t.type = 'OUTBOUND' AND p.user_id = $1";
 
         if (product) {
-            query += " JOIN products p ON t.product_id = p.id";
-            whereClause += " AND p.name = $1";
+            whereClause += " AND p.name = $2";
             params.push(product);
         }
 

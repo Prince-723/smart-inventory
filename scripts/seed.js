@@ -34,7 +34,7 @@ const seedData = async () => {
             type VARCHAR(20) NOT NULL, -- 'INBOUND', 'OUTBOUND'
             product_id INTEGER REFERENCES products(id),
             quantity INTEGER NOT NULL,
-            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             description TEXT
           );
         `);
@@ -56,11 +56,11 @@ const seedData = async () => {
         await pool.query(`
           CREATE TABLE alerts (
               id SERIAL PRIMARY KEY,
+              product_id INTEGER REFERENCES products(id),
               type VARCHAR(50), 
               message TEXT,
               severity VARCHAR(20),
-              timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-              product_name VARCHAR(255)
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
           );
         `);
 
@@ -81,7 +81,7 @@ const seedData = async () => {
 
         console.log('Seeding transactions...');
         await pool.query(`
-            INSERT INTO transactions (type, product_id, quantity, description, timestamp) VALUES
+            INSERT INTO transactions (type, product_id, quantity, description, created_at) VALUES
             ('OUTBOUND', ${products['Bananas']}, 200, 'Daily Sales', NOW() - INTERVAL '1 day'),
             ('INBOUND', ${products['Carrots']}, 50, 'Restock', NOW()),
             ('OUTBOUND', ${products['Chicken']}, 120, 'Restaurant Order', NOW() - INTERVAL '2 hours'),
@@ -103,10 +103,10 @@ const seedData = async () => {
 
         console.log('Seeding alerts...');
         await pool.query(`
-             INSERT INTO alerts (product_name, type, message, severity) VALUES
-             ('Chicken', 'low_stock', 'Stock level below reorder point', 'warning'),
-             ('Avocados', 'delay', 'Shipment delayed by 2 days', 'info'),
-             ('Milk', 'expiring', 'Batch #402 expiring in 2 days', 'urgent')
+             INSERT INTO alerts (product_id, type, message, severity) VALUES
+             (${products['Chicken']}, 'low_stock', 'Stock level below reorder point', 'warning'),
+             (NULL, 'delay', 'Shipment delayed by 2 days', 'info'),
+             (${products['Milk']}, 'expiring', 'Batch #402 expiring in 2 days', 'urgent')
         `);
 
         console.log('Seeding complete!');

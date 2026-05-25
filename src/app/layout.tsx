@@ -30,16 +30,24 @@ export const metadata: Metadata = {
   },
 }
 
+import { Toaster } from "@/components/ui/toaster"
+import { NavBar } from "@/components/nav-bar"
+import { AuthWrapper } from "@/components/auth-wrapper"
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`font-sans antialiased`}>
-        {children}
-        <Analytics />
+    <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
+      <body className="font-sans antialiased">
+        <AuthWrapper>
+          <NavBar />
+          {children}
+          <Toaster />
+          <Analytics />
+        </AuthWrapper>
       </body>
     </html>
   )

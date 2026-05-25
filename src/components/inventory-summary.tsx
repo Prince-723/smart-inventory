@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Package, TrendingDown, AlertTriangle, ChevronDown } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useEffect, useState } from "react"
+import { StockManager } from "./stock-manager"
 
 interface InventorySummaryProps {
   selectedProduct: string
   onProductChange: (product: string) => void
+  onProductsLoaded?: (productNames: string[]) => void
 }
 
 interface Product {
@@ -21,9 +23,10 @@ interface Product {
   risk?: "Low" | "Medium" | "High"
 }
 
-export function InventorySummary({ selectedProduct, onProductChange }: InventorySummaryProps) {
+export function InventorySummary({ selectedProduct, onProductChange, onProductsLoaded }: InventorySummaryProps) {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   useEffect(() => {
     async function fetchProducts() {
@@ -39,6 +42,10 @@ export function InventorySummary({ selectedProduct, onProductChange }: Inventory
             risk: p.stock_level < p.reorder_point ? "High" : p.stock_level < p.reorder_point * 2 ? "Medium" : "Low"
           }))
           setProducts(enrichedData)
+          
+          if (onProductsLoaded) {
+            onProductsLoaded(enrichedData.map((p: Product) => p.name))
+          }
         }
       } catch (error) {
         console.error("Failed to fetch products", error)
@@ -47,7 +54,14 @@ export function InventorySummary({ selectedProduct, onProductChange }: Inventory
       }
     }
     fetchProducts()
-  }, [])
+  }, [refreshTrigger])
+
+  const handleSuccess = (newProductName?: string) => {
+    setRefreshTrigger(prev => prev + 1)
+    if (newProductName) {
+      onProductChange(newProductName)
+    }
+  }
 
   const inventory = products.find((p) => p.name === selectedProduct) || products[0]
 
@@ -67,11 +81,26 @@ export function InventorySummary({ selectedProduct, onProductChange }: Inventory
   }
 
   if (loading) {
-    return <Card className="p-6">Loading inventory...</Card>
+    return <Card className="p-6 bg-card border-border">Loading inventory...</Card>
   }
 
   if (!inventory) {
-    return <Card className="p-6">No inventory data available.</Card>
+    return (
+      <Card className="p-6 bg-card border-border flex flex-col items-center justify-center text-center min-h-[300px] relative overflow-hidden">
+        <div className="rounded-2xl bg-primary/10 p-4 mb-4 border border-primary/20">
+          <Package className="h-8 w-8 text-primary" />
+        </div>
+        <h3 className="text-base font-bold text-foreground">Empty Catalog Slate</h3>
+        <p className="text-xs text-muted-foreground max-w-[200px] mt-1 mb-4 leading-relaxed font-semibold">
+          Your inventory block is clean. Add items to initialize analytics.
+        </p>
+        <StockManager 
+          currentProduct={undefined} 
+          onSuccess={handleSuccess} 
+          products={[]} 
+        />
+      </Card>
+    )
   }
 
   const RiskIcon = getRiskIcon(inventory.risk || "Low")
@@ -129,6 +158,12 @@ export function InventorySummary({ selectedProduct, onProductChange }: Inventory
             {inventory.risk}
           </Badge>
         </div>
+
+        <StockManager 
+          currentProduct={inventory} 
+          onSuccess={handleSuccess} 
+          products={products} 
+        />
       </div>
     </Card>
   )

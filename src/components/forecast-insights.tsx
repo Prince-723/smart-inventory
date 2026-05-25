@@ -1,3 +1,5 @@
+"use client"
+
 import { Card } from "@/components/ui/card"
 import { TrendingUp, Calendar, Target, AlertCircle, Package } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -8,6 +10,7 @@ interface ForecastInsightsProps {
 
 export function ForecastInsights({ selectedProduct }: ForecastInsightsProps) {
   const [insights, setInsights] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function fetchInsights() {
@@ -19,14 +22,14 @@ export function ForecastInsights({ selectedProduct }: ForecastInsightsProps) {
         }
       } catch (e) {
         console.error("Failed to fetch insights", e)
+      } finally {
+        setLoading(false)
       }
     }
     fetchInsights()
   }, [])
 
   const forecast = insights ? (insights[selectedProduct] || Object.values(insights)[0]) : null
-
-  if (!forecast) return <Card className="p-6">Loading insights...</Card>
 
   const getRiskMessage = (risk: string) => {
     switch (risk) {
@@ -37,6 +40,26 @@ export function ForecastInsights({ selectedProduct }: ForecastInsightsProps) {
       default:
         return "Low Risk - Stock levels adequate"
     }
+  }
+
+  if (loading) {
+    return <Card className="p-6 bg-card border-border">Loading insights...</Card>
+  }
+
+  if (!forecast) {
+    return (
+      <Card className="p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <div className="rounded-lg bg-primary/10 p-2">
+            <TrendingUp className="h-5 w-5 text-primary" />
+          </div>
+          <h2 className="text-lg font-semibold text-foreground">Forecast Insights</h2>
+        </div>
+        <p className="text-xs text-muted-foreground leading-relaxed font-semibold text-center py-6">
+          No insights available. Add products to trigger forecasting models.
+        </p>
+      </Card>
+    )
   }
 
   return (
