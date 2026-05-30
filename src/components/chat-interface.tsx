@@ -113,7 +113,7 @@ export function ChatInterface({ currentProduct }: ChatInterfaceProps) {
   }
 
   return (
-    <div className="flex h-[950px] w-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+    <div className="flex h-[600px] md:h-[650px] w-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm">
       {/* Chat Messages - Fixed scrollable area */}
       <div className="min-h-0 flex-1 overflow-y-auto p-6">
         <div className="space-y-4">

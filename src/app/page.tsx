@@ -22,11 +22,11 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto flex h-[calc(100vh-120px)] max-w-[2000px] flex-col p-6">
-        <div className="grid h-full gap-3 lg:grid-cols-12">
+      <div className="mx-auto flex min-h-[calc(100vh-64px)] h-auto max-w-[2000px] flex-col p-4 md:p-6 pb-12">
+        <div className="grid gap-4 grid-cols-1 lg:grid-cols-12">
           
           {/* Left Column (Inventory Metrics & Analytics) */}
-          <div className="flex flex-col gap-3 lg:col-span-3">
+          <div className="flex flex-col gap-4 lg:col-span-3">
             <InventorySummary 
               key={`summary-${refreshTrigger}`}
               selectedProduct={selectedProduct} 
@@ -44,14 +44,14 @@ export default function Page() {
           </div>
 
           {/* Center Column (Demand Forecast Chart & AI Assistant) */}
-          <div className="flex h-full flex-col gap-3 lg:col-span-6">
-            <div className="flex-shrink-0">
+          <div className="flex flex-col gap-4 lg:col-span-6">
+            <div>
               <ForecastChart 
                 key={`chart-${refreshTrigger}`}
                 selectedProduct={selectedProduct} 
               />
             </div>
-            <div className="min-h-0 flex-1 overflow-hidden">
+            <div>
               <ChatInterface 
                 key={`chat-${refreshTrigger}`}
                 currentProduct={selectedProduct} 
@@ -60,7 +60,7 @@ export default function Page() {
           </div>
 
           {/* Right Column (Alerts Board) */}
-          <div className="flex flex-col gap-3 lg:col-span-3 h-full overflow-hidden">
+          <div className="flex flex-col gap-4 lg:col-span-3">
             <StockAlerts key={`alerts-${refreshTrigger}`} />
           </div>
           

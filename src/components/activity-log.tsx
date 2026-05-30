@@ -68,7 +68,7 @@ export function ActivityLog({ selectedProduct }: ActivityLogProps) {
   const filteredActivities = activities.filter(a => a.productName === selectedProduct)
 
   return (
-    <div className="flex h-full flex-col rounded-lg border border-border bg-card">
+    <div className="flex h-[300px] lg:h-[320px] flex-col rounded-lg border border-border bg-card">
       <div className="border-b border-border px-4 py-3">
         <h2 className="text-sm font-semibold text-foreground">Activity Log</h2>
         <p className="text-xs text-muted-foreground">Recent transactions for {selectedProduct}</p>

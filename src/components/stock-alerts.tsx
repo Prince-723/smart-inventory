@@ -155,7 +155,7 @@ export function StockAlerts() {
   }
 
   return (
-    <Card className="flex h-full flex-col overflow-hidden border-border bg-card p-5 relative">
+    <Card className="flex h-[450px] lg:h-[550px] flex-col overflow-hidden border-border bg-card p-5 relative">
       
       {/* Header section */}
       <div className="mb-4 flex items-center justify-between">

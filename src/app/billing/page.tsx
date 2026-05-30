@@ -301,7 +301,7 @@ export default function BillingPage() {
               )}
 
               {/* Cart Table List */}
-              <div className="border border-border/40 rounded-xl overflow-hidden min-h-[220px]">
+              <div className="border border-border/40 rounded-xl overflow-x-auto min-h-[220px]">
                 <table className="w-full text-xs text-left">
                   <thead>
                     <tr className="border-b border-border bg-muted/40 text-muted-foreground font-bold">
